@@ -1026,52 +1026,82 @@ const unsigned char rom[] PROGMEM = { //$E000 - FFFF
 };
 
 unsigned char ram[1024];
-// Free memory for storing BASIC programs
-unsigned char basic[512];
 
-unsigned char read8(unsigned short address) {
-  unsigned char page = address>>8;
-  if(page < 0x04) {
+unsigned char inline read8(unsigned short address) {
+  switch(address>>8) {
+  case 0x00: case 0x01: 
+  case 0x02: case 0x03:
     return ram[address];
-  } else if (page >= 0x04 && page < 0x08) {
+  case 0x04: case 0x05:
+  case 0x06: case 0x07:
     return screenRead(address);
-  } else if (page >= 0x08 && page < 0x10) {
-    return basic[address-0x800];
-  } else if (page >= 0xE0) {
+  case 0xC0:
+    return softSwitch(address);
+  case 0xE0: case 0xE1: 
+  case 0xE2: case 0xE3:
+  case 0xE4: case 0xE5:
+  case 0xE6: case 0xE7:
+  case 0xE8: case 0xE9:
+  case 0xEA: case 0xEB:
+  case 0xEC: case 0xED:
+  case 0xEE: case 0xEF:
+  case 0xF0: case 0xF1: 
+  case 0xF2: case 0xF3:
+  case 0xF4: case 0xF5:
+  case 0xF6: case 0xF7:
+  case 0xF8: case 0xF9:
+  case 0xFA: case 0xFB:
+  case 0xFC: case 0xFD:
+  case 0xFE: case 0xFF:
     return pgm_read_byte_near(rom+address-0xE000);
-  } else {
-    // Keyboard Data
-    if(address == 0xC000) return keyboard_read();
-    // Keyboard Strobe
-    if(address == 0xC010) keyboard_strobe();
-    // Speaker toggle
-    if(address == 0xC030) speaker_toggle();
-    return 0;
+  default:
+    return 0xFF;
   }
 }
 
-unsigned short read16(unsigned short address) {
+unsigned short inline read16(unsigned short address) {
   return (unsigned short)read8(address) | (((unsigned short)read8(address+1))<<8);
 }
 
-void write8(unsigned short address, unsigned char value) {
-  unsigned char page = address>>8;
-  if(page < 0x04) {
+void inline write8(unsigned short address, unsigned char value) {
+  switch(address>>8) {
+  case 0x00: case 0x01: 
+  case 0x02: case 0x03:
     ram[address] = value;
-  } else if(page >= 0x04 && page < 0x08) {
+    break;
+  case 0x04: case 0x05:
+  case 0x06: case 0x07:
     screenWrite(address, value);
-  } else if (page >= 0x08 && page < 0x10) {
-    basic[address-0x800] = value;
-  } else {
-    // Keyboard Strobe
-    if(address == 0xC010) keyboard_strobe();
-    // Speaker toggle
-    if(address == 0xC030) speaker_toggle();
+    break;
+  case 0xC0:
+    softSwitch(address);
+    break;
+  default:
+    return;
   }
 }
 
-void write16(unsigned short address, unsigned short value) {
+void inline write16(unsigned short address, unsigned short value) {
    write8(address, value&0x00FF);
    write8(address+1, (value>>8)&0x00FF);
+}
+
+// Stack functions
+void inline push16(unsigned short pushval) {
+  write8(STP_BASE + (STP--), (pushval>>8)&0xFF);
+  write8(STP_BASE + (STP--), pushval&0xFF);
+}
+
+void inline push8(unsigned char pushval) {
+  write8(STP_BASE + (STP--), pushval);
+}
+
+unsigned short inline pull16() {
+  unsigned short value16 = read8(STP_BASE + (++STP)) | ((unsigned short)read8(STP_BASE + (++STP))<< 8);
+  return value16;
+}
+
+unsigned char inline pull8() {
+  return read8(STP_BASE + (++STP));
 }
 
