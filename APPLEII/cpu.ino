@@ -1,5 +1,5 @@
-// μ6502 - Barebones 6502 Emulator By Damian Peckett
-// dpeckett.com, <damian.peckett@gmail.com>
+﻿// μ6502 - Barebones 6502 Emulator By Damian Peckett
+// dpeckett.com, <damian@pecke.tt>
 
 // Address Modes
 #define AD_IMP	0x01

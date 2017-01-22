@@ -4,7 +4,7 @@ Bunch of unit tests I wrote during the development of the emulator.
 These are very nasty and not really release worthy but someone might
 find them useful!
 
-Copyright (c) 2015, Damian Peckett <damian.peckett@gmail.com>
+Copyright (c) 2015, Damian Peckett <damian@pecke.tt>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

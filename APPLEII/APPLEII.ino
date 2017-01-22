@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2015, Damian Peckett <damian.peckett@gmail.com>
+Copyright (c) 2015, Damian Peckett <damian@pecke.tt>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
